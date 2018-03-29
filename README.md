@@ -12,9 +12,13 @@ All it requires to get running is a reader schema available to your connector.
 
 ## Using the Converter
 
-To use the converter, you'll want to download a binary from GitHub and put it in the plugins folder
+### Requirements
+
+1. To use the converter, you'll want to download a binary from GitHub and put it in the plugins folder
 for your Connect instance. You'll need to consult your Kafka Connect configuration to determine
 where this is for your instance.
+2. You'll also need to ensure the Confluent Schema Registry library is on your classpath because
+this connector does depend on some of the Confluent AvroConverter code.
 
 Once you've confirmed that the binary is in place, then in a properties file or JSON connector
 configuration you can specify this converter for keys and/or values. You are currently required
