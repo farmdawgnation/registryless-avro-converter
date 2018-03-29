@@ -1,0 +1,8 @@
+{
+  "type": "record",
+  "name": "dog",
+  "fields": [
+    {"name": "name", "type": "string"},
+    {"name": "breed", "type": "string"}
+  ]
+}
