@@ -4,11 +4,11 @@ This is an Avro converter for Kafka Connect that does not depend on Confluent Sc
 shares much of the same underlying code as Confluent's `AvroConverter`, and should work the same in
 practice less any features that deal with the Schema Registry itself.
 
-We developed this converter to facilitate cases where our Kafka Connect instance isn't opinionated
-about _what_ it's actually processing and should largely be able to rely on the consistency of
-schemas by design. However, even if your project doesn't meet those requirements you may find
-this converter useful for doing R&D work or just testing the running of Avro through Connect without
-the extra Schema Registry overhead.
+We developed this converter at MailChimp to facilitate R&D with Connect and use cases where pushing
+the Schema Registry Avro Format through Kafka was not desirable or we couldn't justify the overhead
+of a Schema Registry.
+
+All it requires to get running is a reader schema available to your connector.
 
 ## Using the Converter
 
@@ -48,4 +48,4 @@ This converter uses Gradle. Building the project is as simple as:
 ## Contributing
 
 Pull requests and issues are welcome! If you think you've spotted a problem or you just have a
-question do not hesitate to [open an issue][https://github.com/farmdawgnation/registryless-avro-converter/issues/new].
+question do not hesitate to [open an issue](https://github.com/farmdawgnation/registryless-avro-converter/issues/new).
