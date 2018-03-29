@@ -49,3 +49,10 @@ This converter uses Gradle. Building the project is as simple as:
 
 Pull requests and issues are welcome! If you think you've spotted a problem or you just have a
 question do not hesitate to [open an issue](https://github.com/farmdawgnation/registryless-avro-converter/issues/new).
+
+### Roadmap
+
+We're planning on making the following major improvements moving forward:
+
+* No longer requiring a reader schema be provided
+* Supporting variable schema cache size
