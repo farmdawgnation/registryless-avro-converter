@@ -16,12 +16,20 @@
 package me.frmr.kafka.connect;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
+import java.util.HashMap;
+import java.util.Map;
 
 class RegistrylessAvroConverterTest {
   @Test
   void configureRequiresSchemaPath() {
-    // todo
+    RegistrylessAvroConverter sut = new RegistrylessAvroConverter();
+    Map<String, Object> settings = new HashMap<String, Object>();
+    settings.put("some.random.setting", "bacon");
+
+    Throwable resultingException = assertThrows(IllegalStateException.class, () -> sut.configure(settings, false));
+    assertEquals("The schema.path configuration setting is required to use the RegistrylessAvroConverter.", resultingException.getMessage());
   }
 
   @Test
