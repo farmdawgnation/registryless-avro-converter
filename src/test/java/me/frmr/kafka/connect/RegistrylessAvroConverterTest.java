@@ -14,3 +14,28 @@
  * limitations under the License.
  */
 package me.frmr.kafka.connect;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+
+class RegistrylessAvroConverterTest {
+  @Test
+  void configureRequiresSchemaPath() {
+    // todo
+  }
+
+  @Test
+  void configureRequiresParsableSchema() {
+    // todo
+  }
+
+  @Test
+  void fromConnectDataWorks() {
+    // todo
+  }
+
+  @Test
+  void toConnectDataWorks() {
+    // todo
+  }
+}
