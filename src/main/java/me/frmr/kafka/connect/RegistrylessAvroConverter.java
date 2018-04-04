@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 import java.util.Map;
+import org.apache.avro.SchemaParseException;
 import org.apache.avro.io.DatumReader;
 import org.apache.avro.io.DatumWriter;
 import org.apache.avro.generic.GenericDatumReader;
@@ -71,6 +72,8 @@ public class RegistrylessAvroConverter implements Converter {
         avroSchemaFile = new File(avroSchemaPath);
         avroSchema = parser.parse(avroSchemaFile);
         connectSchema = avroDataHelper.toConnectSchema(avroSchema);
+      } catch (SchemaParseException spe) {
+        throw new IllegalStateException("Unable to parse Avro schema when starting RegistrylessAvroConverter", spe);
       } catch (IOException ioe) {
         throw new IllegalStateException("Unable to parse Avro schema when starting RegistrylessAvroConverter", ioe);
       }
@@ -91,6 +94,7 @@ public class RegistrylessAvroConverter implements Converter {
       dataFileWriter.setCodec(CodecFactory.nullCodec());
       dataFileWriter.create(avroSchema, baos);
       dataFileWriter.append(avroInstance);
+      dataFileWriter.flush();
 
       return baos.toByteArray();
     } catch (IOException ioe) {
