@@ -94,6 +94,7 @@ public class RegistrylessAvroConverter implements Converter {
       dataFileWriter.setCodec(CodecFactory.nullCodec());
       dataFileWriter.create(avroSchema, baos);
       dataFileWriter.append(avroInstance);
+      dataFileWriter.flush();
 
       return baos.toByteArray();
     } catch (IOException ioe) {
