@@ -108,8 +108,10 @@ class RegistrylessAvroConverterTest {
       SeekableByteArrayInput sbai = new SeekableByteArrayInput(result);
       DataFileReader<GenericRecord> dataFileReader = new DataFileReader<>(sbai, datumReader);
     ) {
-      assertEquals(1, dataFileReader.getBlockCount());
       instance = dataFileReader.next();
+
+      assertEquals("Beamer", instance.get("name").toString());
+      assertEquals("Boarder Collie", instance.get("breed").toString());
     } catch (IOException ioe) {
       throw new Exception("Failed to deserialize Avro data", ioe);
     }
