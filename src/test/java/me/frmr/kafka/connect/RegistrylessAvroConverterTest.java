@@ -17,8 +17,13 @@ package me.frmr.kafka.connect;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.kafka.connect.data.*;
 import org.junit.jupiter.api.Test;
 import java.io.File;
+import java.io.InputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -69,7 +74,30 @@ class RegistrylessAvroConverterTest {
   }
 
   @Test
-  void toConnectDataWorks() {
-    // todo
+  void toConnectDataWorks() throws IOException {
+    InputStream dogDataStream = this.getClass().getClassLoader().getResourceAsStream("data/binary/beamer.avro");
+    byte[] dogData = IOUtils.toByteArray(dogDataStream);
+
+    // This only has to work in the project directory because this is a test. I'm not particularly
+    // concerned if it works when the tests are packaged in JAR form right now. If we start doing
+    // that then we'll do something clever-er.
+    String validSchemaPath = new File("src/test/resources/schema/dog.avsc").getAbsolutePath();
+
+    RegistrylessAvroConverter sut = new RegistrylessAvroConverter();
+    Map<String, Object> settings = new HashMap<String, Object>();
+    settings.put("schema.path", validSchemaPath);
+
+    sut.configure(settings, false);
+
+    SchemaAndValue sav = sut.toConnectData("test_topic", dogData);
+
+    Schema dogSchema = sav.schema();
+    assertEquals(Schema.Type.STRUCT, dogSchema.type());
+    assertEquals(Schema.Type.STRING, dogSchema.field("name").schema().type());
+    assertEquals(Schema.Type.STRING, dogSchema.field("breed").schema().type());
+
+    Struct dogStruct = (Struct)sav.value();
+    assertEquals("Beamer", dogStruct.getString("name"));
+    assertEquals("Border Collie", dogStruct.getString("breed"));
   }
 }
