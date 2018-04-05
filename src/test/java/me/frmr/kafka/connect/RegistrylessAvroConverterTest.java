@@ -36,16 +36,6 @@ import java.util.Map;
 
 class RegistrylessAvroConverterTest {
   @Test
-  void configureRequiresSchemaPath() {
-    RegistrylessAvroConverter sut = new RegistrylessAvroConverter();
-    Map<String, Object> settings = new HashMap<String, Object>();
-    settings.put("some.random.setting", "bacon");
-
-    Throwable resultingException = assertThrows(IllegalStateException.class, () -> sut.configure(settings, false));
-    assertEquals("The schema.path configuration setting is required to use the RegistrylessAvroConverter.", resultingException.getMessage());
-  }
-
-  @Test
   void configureWorksOnParsableSchema() {
     // This only has to work in the project directory because this is a test. I'm not particularly
     // concerned if it works when the tests are packaged in JAR form right now. If we start doing
@@ -76,7 +66,7 @@ class RegistrylessAvroConverterTest {
 
 
   @Test
-  void fromConnectDataWorks() throws Exception {
+  void fromConnectDataWorksWithWriterSchema() throws Exception {
     // This only has to work in the project directory because this is a test. I'm not particularly
     // concerned if it works when the tests are packaged in JAR form right now. If we start doing
     // that then we'll do something clever-er.
@@ -115,11 +105,46 @@ class RegistrylessAvroConverterTest {
     } catch (IOException ioe) {
       throw new Exception("Failed to deserialize Avro data", ioe);
     }
-
   }
 
   @Test
-  void toConnectDataWorks() throws IOException {
+  void fromConnectDataWorksWithoutWriterSchema() throws Exception {
+    RegistrylessAvroConverter sut = new RegistrylessAvroConverter();
+    Map<String, Object> settings = new HashMap<String, Object>();
+    sut.configure(settings, false);
+
+    Schema dogSchema = SchemaBuilder.struct()
+      .name("dog")
+      .field("name", Schema.STRING_SCHEMA)
+      .field("breed", Schema.STRING_SCHEMA)
+      .build();
+
+    Struct dogStruct = new Struct(dogSchema)
+      .put("name", "Beamer")
+      .put("breed", "Boarder Collie");
+
+    byte[] result = sut.fromConnectData("test_topic", dogSchema, dogStruct);
+    FileUtils.writeByteArrayToFile(new File("example.avro"), result);
+
+    // This is a bit annoying but because of the way avro works - the resulting byte array isn't
+    // deterministic - so we need to read it back using the avro tools.
+    DatumReader<GenericRecord> datumReader = new GenericDatumReader<>();
+    GenericRecord instance = null;
+    try (
+      SeekableByteArrayInput sbai = new SeekableByteArrayInput(result);
+      DataFileReader<GenericRecord> dataFileReader = new DataFileReader<>(sbai, datumReader);
+    ) {
+      instance = dataFileReader.next();
+
+      assertEquals("Beamer", instance.get("name").toString());
+      assertEquals("Boarder Collie", instance.get("breed").toString());
+    } catch (IOException ioe) {
+      throw new Exception("Failed to deserialize Avro data", ioe);
+    }
+  }
+
+  @Test
+  void toConnectDataWorksWithReaderSchema() throws IOException {
     InputStream dogDataStream = this.getClass().getClassLoader().getResourceAsStream("data/binary/beamer.avro");
     byte[] dogData = IOUtils.toByteArray(dogDataStream);
 
@@ -131,6 +156,27 @@ class RegistrylessAvroConverterTest {
     RegistrylessAvroConverter sut = new RegistrylessAvroConverter();
     Map<String, Object> settings = new HashMap<String, Object>();
     settings.put("schema.path", validSchemaPath);
+    sut.configure(settings, false);
+
+    SchemaAndValue sav = sut.toConnectData("test_topic", dogData);
+
+    Schema dogSchema = sav.schema();
+    assertEquals(Schema.Type.STRUCT, dogSchema.type());
+    assertEquals(Schema.Type.STRING, dogSchema.field("name").schema().type());
+    assertEquals(Schema.Type.STRING, dogSchema.field("breed").schema().type());
+
+    Struct dogStruct = (Struct)sav.value();
+    assertEquals("Beamer", dogStruct.getString("name"));
+    assertEquals("Border Collie", dogStruct.getString("breed"));
+  }
+
+  @Test
+  void toConnectDataWorksWithoutReaderSchema() throws IOException {
+    InputStream dogDataStream = this.getClass().getClassLoader().getResourceAsStream("data/binary/beamer.avro");
+    byte[] dogData = IOUtils.toByteArray(dogDataStream);
+
+    RegistrylessAvroConverter sut = new RegistrylessAvroConverter();
+    Map<String, Object> settings = new HashMap<String, Object>();
     sut.configure(settings, false);
 
     SchemaAndValue sav = sut.toConnectData("test_topic", dogData);
