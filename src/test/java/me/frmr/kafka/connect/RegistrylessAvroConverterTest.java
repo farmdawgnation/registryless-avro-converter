@@ -88,7 +88,6 @@ class RegistrylessAvroConverterTest {
       .put("breed", "Boarder Collie");
 
     byte[] result = sut.fromConnectData("test_topic", dogSchema, dogStruct);
-    FileUtils.writeByteArrayToFile(new File("example.avro"), result);
 
     // This is a bit annoying but because of the way avro works - the resulting byte array isn't
     // deterministic - so we need to read it back using the avro tools.
@@ -124,7 +123,6 @@ class RegistrylessAvroConverterTest {
       .put("breed", "Boarder Collie");
 
     byte[] result = sut.fromConnectData("test_topic", dogSchema, dogStruct);
-    FileUtils.writeByteArrayToFile(new File("example.avro"), result);
 
     // This is a bit annoying but because of the way avro works - the resulting byte array isn't
     // deterministic - so we need to read it back using the avro tools.
