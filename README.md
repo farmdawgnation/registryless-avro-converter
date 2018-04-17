@@ -8,8 +8,6 @@ We developed this converter at MailChimp to facilitate R&D with Connect and use 
 the Schema Registry Avro Format through Kafka was not desirable or we couldn't justify the overhead
 of a Schema Registry.
 
-All it requires to get running is a reader schema available to your connector.
-
 ## Using the Converter
 
 ### Requirements
@@ -21,10 +19,27 @@ where this is for your instance.
 this connector does depend on some of the Confluent AvroConverter code.
 
 Once you've confirmed that the binary is in place, then in a properties file or JSON connector
-configuration you can specify this converter for keys and/or values. You are currently required
-to provide a reader schema for the converter to use, as well, under the `schema.path` setting.
+configuration you can specify this converter for keys and/or values.
 
-Here's an example of how we might define RAC for use with keys and values in standalone mode:
+### Configuration
+
+To use the RegistrylessAvroConverter, simply provide it in the `key.converter` or `value.converter`
+setting for your connector. RAC can run with or without an explicit reader or writer schema. If an
+explicit schema is not provided, the schema used will be determined at runtime.
+
+**N.B.** Schemas determined at runtime could vary depending on how your connector is implemented
+and how it generates Connect Data Schemas. We recommend understanding the semantics of your
+Connectors before using the schemaless configuration for sources.
+
+Here's an example of how we might define RAC for use with keys and values without an explicit schema
+in standalone mode:
+
+```
+key.converter=me.frmr.kafka.connect.RegistrylessAvroConverter
+value.converter=me.frmr.kafka.connect.RegistrylessAvroConverter
+```
+
+And this is how you would define a RAC _with_ an explicit schema:
 
 ```
 key.converter=me.frmr.kafka.connect.RegistrylessAvroConverter
