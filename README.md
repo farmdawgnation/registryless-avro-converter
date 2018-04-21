@@ -10,13 +10,15 @@ of a Schema Registry.
 
 ## Using the Converter
 
-### Requirements
+### Setup
 
-1. To use the converter, you'll want to download a binary from GitHub and put it in the plugins folder
-for your Connect instance. You'll need to consult your Kafka Connect configuration to determine
-where this is for your instance.
-2. You'll also need to ensure the Confluent Schema Registry library is on your classpath because
-this connector does depend on some of the Confluent AvroConverter code.
+1. You must have **Java 8** as your runtime environment.
+2. **Confluent Platform 4.0**: as this plugin relies on various Confluent libraries that are
+  distributed with CP (e.g. their avro converter, etc). You can download the tarball
+  [here](http://packages.confluent.io/archive/4.0/confluent-oss-4.0.0-2.11.zip). Vanilla Kafka
+  Connect won't have some of these dependencies.
+3. Configure a `plugin.path` in your connect setup and drop a RegistrylessAvroConverter JAR in that
+  path so that its picked up with Kafka Connect starts.
 
 Once you've confirmed that the binary is in place, then in a properties file or JSON connector
 configuration you can specify this converter for keys and/or values.
