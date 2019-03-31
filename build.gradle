@@ -1,17 +1,17 @@
-buildscript {
-   repositories {
-       mavenCentral()
-   }
-   dependencies {
-       classpath 'org.junit.platform:junit-platform-gradle-plugin:1.1.0'
-   }
+plugins {
+  id 'java'
 }
-
-apply plugin: 'java'
-apply plugin: 'org.junit.platform.gradle.plugin'
 
 version = '1.7.0-SNAPSHOT'
 group = 'me.frmr.kafka.connect'
+
+repositories {
+  mavenLocal()
+  mavenCentral()
+  maven {
+    url "http://packages.confluent.io/maven/"
+  }
+}
 
 ext {
   // You have to keep these synced - so confluent 4.1.0 builds against kafka connect 1.1.0.
@@ -38,10 +38,9 @@ dependencies {
   testRuntime "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
 }
 
-repositories {
-  mavenLocal()
-  mavenCentral()
-  maven {
-    url "http://packages.confluent.io/maven/"
+test {
+  useJUnitPlatform()
+  testLogging {
+    events "passed", "skipped", "failed"
   }
 }
