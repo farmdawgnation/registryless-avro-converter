@@ -13,15 +13,22 @@ of a Schema Registry.
 ### Setup
 
 1. You must have **Java 8** as your runtime environment.
-2. **Confluent Platform 4.0**: as this plugin relies on various Confluent libraries that are
-  distributed with CP (e.g. their avro converter, etc). You can download the tarball
-  [here](http://packages.confluent.io/archive/4.0/confluent-oss-4.0.0-2.11.zip). Vanilla Kafka
-  Connect won't have some of these dependencies.
+2. **Confluent Platform**: as this plugin relies on various Confluent libraries that are
+  distributed with CP (e.g. their avro converter, etc). See the chart below for the version matrix.
 3. Configure a `plugin.path` in your connect setup and drop a RegistrylessAvroConverter JAR in that
   path so that its picked up with Kafka Connect starts.
 
 Once you've confirmed that the binary is in place, then in a properties file or JSON connector
 configuration you can specify this converter for keys and/or values.
+
+### Version Matrix
+
+| RAC Version   | Kafka Version | Confluent Version |
+|---------------|---------------|-------------------|
+| 1.6.0         | 2.1.1         | 5.1.2             |
+| 1.5.0         | 2.0.1         | 5.0.3             |
+| 1.4.0         | 1.1.1         | 4.1.3             |
+| 1.3.0         | 1.0.0         | 4.0.0             |
 
 ### Configuration
 
@@ -50,6 +57,18 @@ value.converter=me.frmr.kafka.connect.RegistrylessAvroConverter
 value.converter.schema.path=/path/to/schema/file.avsc
 ```
 
+You can also tune the number of cached schemas we maintain in memory. By default, we store 50 but
+you may need to increase that limit if your data structures have a lot of nesting or you're dealing
+with a lot of different data structure. You can tune it using the `schema.cache.size` setting:
+
+```
+key.converter.schema.cache.size = 100
+value.converter.schema.cache.size = 100
+```
+
+Unfortunately, the best way to _know_ you need to tune this value right now might be to hook up
+YourKit or something similar.
+
 ## Building the Converter
 
 This converter uses Gradle. Building the project is as simple as:
@@ -63,17 +82,10 @@ This converter uses Gradle. Building the project is as simple as:
 * This project is a bit weird because it's designed to be run in a Kafka Connect runtime. So
   all of the dependencies are `compileOnly` because they're available on the classpath at runtime.
 * If you're testing this locally, it's a bit weird in much the same way. You'll need to copy
-  the JAR into an appropriate `lib/` folder so the class is visible to Kafka Connect for local
-  testing.
+  the JAR into an appropriate plugin path folder (as configured on your Connect worker) so the class
+  is visible to Kafka Connect for local testing.
 
 ## Contributing
 
 Pull requests and issues are welcome! If you think you've spotted a problem or you just have a
 question do not hesitate to [open an issue](https://github.com/farmdawgnation/registryless-avro-converter/issues/new).
-
-### Roadmap
-
-We're planning on making the following major improvements moving forward:
-
-* No longer requiring a reader schema be provided
-* Supporting variable schema cache size
