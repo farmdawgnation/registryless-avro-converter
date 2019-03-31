@@ -25,6 +25,11 @@ ext {
 }
 
 dependencies {
+  // These libraries are marked compileOnly. Though they are required at runtime, the reality of
+  // deploying software inside a Kafka Connect ecosystem is that it could be challenging to avoid
+  // issues where we end up with multiple versions of the libraries on the classpath once all the
+  // plugins are loaded. Our code should behave well so long as the version available at runtime
+  // is binary compatible with the version we built against.
   compileOnly "org.apache.kafka:connect-api:$kafkaVersion"
   compileOnly "io.confluent:kafka-connect-avro-converter:$cpVersion"
   compileOnly "org.slf4j:slf4j-api:$slf4jApiVersion"
