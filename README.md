@@ -25,6 +25,7 @@ configuration you can specify this converter for keys and/or values.
 
 | RAC Version   | Kafka Version | Confluent Version |
 |---------------|---------------|-------------------|
+| 1.10.0        | 2.5.0         | 5.5.1             |
 | 1.9.0         | 2.4.1         | 5.4.2             |
 | 1.8.0         | 2.3.0         | 5.3.0             |
 | 1.7.0         | 2.2.0         | 5.2.0             |
