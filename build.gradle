@@ -17,8 +17,8 @@ ext {
   // You have to keep these synced - so confluent 4.1.0 builds against kafka connect 1.1.0.
   // You'll need to read the release notes for each confluent platform release to figure out
   // what version of Kafka it's built against
-  kafkaVersion = '2.3.1'
-  cpVersion = '5.3.2'
+  kafkaVersion = '2.4.1'
+  cpVersion = '5.4.2'
 
   junitVersion = '5.4.1'
   slf4jApiVersion = '1.7.25'
